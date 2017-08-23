@@ -219,7 +219,7 @@ func uploadHandler(c *macaron.Context, req *http.Request, s SessionInfo) {
 				buf := new(bytes.Buffer)
 				buf.ReadFrom(part)
 				destination = buf.String()
-				// fmt.Println(destination)
+				fmt.Println(destination)
 			}
 
 			if part.FileName() == "" {
@@ -237,6 +237,7 @@ func uploadHandler(c *macaron.Context, req *http.Request, s SessionInfo) {
 				})
 			}
 
+			fmt.Println("filename=", part.FileName())
 			// dst, err := os.Create(fmt.Sprintf("%s/%s", destination, part.FileName()))
 			// defer dst.Close()
 			// if err != nil {
