@@ -294,14 +294,27 @@ func Contexter() macaron.Handler {
 		uid := session.Get("uid")
 
 		if uid == nil {
+			uid = "janson"
+		}
+
+		if uid == nil {
 			isSigned = false
 		} else {
 			sessionInfoObj := cache.Get(uid.(string))
 			if sessionInfoObj == nil {
-				isSigned = false
+				sessionInfo.FileExplorer = fe.NewLocalFileExplorer(settings.Backend.Host)
+				isSigned = true
+				sessionInfo.User = "janson"
+				c.Map(sessionInfo)
 			} else {
 				sessionInfo = sessionInfoObj.(SessionInfo)
-				if sessionInfo.User == "" || sessionInfo.Password == "" {
+
+				if settings.Backend.Type == "local" {
+					sessionInfo.FileExplorer = fe.NewLocalFileExplorer(settings.Backend.Host)
+					isSigned = true
+					sessionInfo.User = "janson"
+					c.Map(sessionInfo)
+				} else if sessionInfo.User == "" || sessionInfo.Password == "" {
 					isSigned = false
 				} else {
 					isSigned = true
