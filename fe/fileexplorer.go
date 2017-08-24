@@ -18,4 +18,5 @@ type FileExplorer interface {
 	UploadFile(destination string, part *multipart.Part) (err error)
 	Close() error
 	GetContent(item string) (string, error)
+	Edit(item, content string) error
 }

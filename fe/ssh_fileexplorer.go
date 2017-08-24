@@ -163,6 +163,10 @@ func (fe *SSHFileExplorer) GetContent(item string) (string, error) {
 	return "", errors.New("not support")
 }
 
+func (fe *SSHFileExplorer) Edit(item string, content string) error {
+	return errors.New("not support")
+}
+
 // Execute cmd on the remote host and return stderr and stdout
 func (fe *SSHFileExplorer) Exec(cmd string) ([]byte, error) {
 	log.Println(cmd)

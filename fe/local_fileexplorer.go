@@ -230,5 +230,16 @@ func (fe *LocalFileExplorer) GetContent(item string) (string, error) {
 		texts = append(texts, scanner.Text())
 	}
 
-	return strings.Join(texts, ""), nil
+	return strings.Join(texts, "\n"), nil
+}
+
+func (fe *LocalFileExplorer) Edit(item string, content string) error {
+	fo, err := os.Create(filepath.Join(fe.RelativePath, item))
+	if err != nil {
+		return err
+	}
+	defer fo.Close()
+
+	_, err = io.Copy(fo, strings.NewReader(content))
+	return err
 }
