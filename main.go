@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
 	"strings"
@@ -279,21 +279,23 @@ func downloadHandler(c *macaron.Context, req *http.Request, s SessionInfo) {
 	case "GET":
 		params := req.URL.Query()
 
-		fileinfo, err := os.Stat(params.Get("path"))
+		fpath := filepath.Join(settings.Backend.Host, params.Get("path"))
+		fileinfo, err := os.Stat(fpath)
 		if err != nil {
 			c.JSON(200, models.GenericResp{
 				models.GenericRespBody{false, err.Error()},
 			})
 		}
-		data, err := ioutil.ReadFile(params.Get("path"))
+		fr, err := os.Open(fpath)
 		if err != nil {
 			c.JSON(200, models.GenericResp{
 				models.GenericRespBody{false, err.Error()},
 			})
 		}
+		defer fr.Close()
 
 		c.Header().Set("content-disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileinfo.Name()))
-		http.ServeContent(c, req, fileinfo.Name(), time.Now(), bytes.NewReader(data))
+		http.ServeContent(c, req, fileinfo.Name(), time.Now(), fr)
 
 	default:
 		c.JSON(200, DEFAULT_API_ERROR_RESPONSE)
