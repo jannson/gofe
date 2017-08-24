@@ -5,6 +5,7 @@
 package fe
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -156,6 +157,10 @@ func (fe *SSHFileExplorer) UploadFile(destination string, part *multipart.Part) 
 
 func (fe *SSHFileExplorer) Close() error {
 	return fe.client.Close()
+}
+
+func (fe *SSHFileExplorer) GetContent(item string) (string, error) {
+	return "", errors.New("not support")
 }
 
 // Execute cmd on the remote host and return stderr and stdout

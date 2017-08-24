@@ -17,4 +17,5 @@ type FileExplorer interface {
 	Mkdir(path string) error
 	UploadFile(destination string, part *multipart.Part) (err error)
 	Close() error
+	GetContent(item string) (string, error)
 }

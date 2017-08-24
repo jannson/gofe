@@ -1,6 +1,7 @@
 package fe
 
 import (
+	"errors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -111,7 +112,7 @@ func (fe *LocalFileExplorer) Init() error {
 }
 
 func (fe *LocalFileExplorer) Mkdir(path string) error {
-	return os.Mkdir(filepath.Join(fe.RelativePath, path), os.FileMode(int(0644)))
+	return os.Mkdir(filepath.Join(fe.RelativePath, path), os.FileMode(int(0700)))
 }
 
 func (fe *LocalFileExplorer) ListDir(path string) ([]models.ListDirEntry, error) {
@@ -188,9 +189,36 @@ func (fe *LocalFileExplorer) Chmod(path []string, code string, recursive bool) (
 }
 
 func (fe *LocalFileExplorer) UploadFile(destination string, part *multipart.Part) (err error) {
-	return nil
+	df, err := os.Create(filepath.Join(fe.RelativePath, destination, part.FileName()))
+	if err != nil {
+		return err
+	}
+	defer df.Close()
+	_, err = io.Copy(df, part)
+	return err
 }
 
 func (fe *LocalFileExplorer) Close() error {
 	return nil
+}
+
+func (fe *LocalFileExplorer) GetContent(item string) (string, error) {
+	realPath := filepath.Join(fe.RelativePath, item)
+	fi, err := os.Stat(realPath)
+	if err != nil {
+		return "", err
+	}
+	if fi.Size() > 1024*1024 {
+		return "", errors.New("file too big, not support getContent")
+	}
+	df, err := os.Open(realPath)
+	if err != nil {
+		return "", err
+	}
+	defer df.Close()
+	b, err := ioutil.ReadAll(df)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
 }

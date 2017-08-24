@@ -163,6 +163,13 @@ func apiHandler(c *macaron.Context, req models.GenericReq, s SessionInfo) {
 		} else {
 			ApiErrorResponse(c, 400, err)
 		}
+	case "getContent":
+		rlt, err := s.FileExplorer.GetContent(req.Item)
+		if err == nil {
+			c.JSON(200, models.GetContentResp{Result: rlt})
+		} else {
+			ApiErrorResponse(c, 400, err)
+		}
 	case "compress":
 		c.JSON(200, DEFAULT_API_ERROR_RESPONSE)
 	case "extract":
