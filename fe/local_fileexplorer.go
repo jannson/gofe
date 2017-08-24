@@ -1,6 +1,7 @@
 package fe
 
 import (
+	"bufio"
 	"errors"
 	"io"
 	"io/ioutil"
@@ -9,6 +10,10 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
+
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/transform"
 
 	"github.com/md2k/gofe/models"
 )
@@ -216,9 +221,14 @@ func (fe *LocalFileExplorer) GetContent(item string) (string, error) {
 		return "", err
 	}
 	defer df.Close()
-	b, err := ioutil.ReadAll(df)
-	if err != nil {
-		return "", err
+
+	dec := transform.NewReader(df, charmap.ISO8859_1.NewDecoder())
+	//dec := bufio.NewReader(df)
+	scanner := bufio.NewScanner(dec)
+	texts := make([]string, 0)
+	for scanner.Scan() {
+		texts = append(texts, scanner.Text())
 	}
-	return string(b), nil
+
+	return strings.Join(texts, ""), nil
 }
