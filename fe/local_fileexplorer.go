@@ -12,9 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"golang.org/x/text/encoding/charmap"
-	"golang.org/x/text/transform"
-
 	"github.com/md2k/gofe/models"
 )
 
@@ -222,8 +219,10 @@ func (fe *LocalFileExplorer) GetContent(item string) (string, error) {
 	}
 	defer df.Close()
 
-	dec := transform.NewReader(df, charmap.ISO8859_1.NewDecoder())
-	//dec := bufio.NewReader(df)
+	//dec := transform.NewReader(df, traditionalchinese.Big5.NewDecoder())
+	//dec := transform.NewReader(df, charmap.ISO8859_1.NewDecoder())
+	dec := bufio.NewReader(df)
+	//dec := transform.NewReader(df, charmap.Windows1250.NewDecoder())
 	scanner := bufio.NewScanner(dec)
 	texts := make([]string, 0)
 	for scanner.Scan() {
